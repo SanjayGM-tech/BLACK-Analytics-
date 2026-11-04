@@ -114,13 +114,18 @@ def main():
     data_dir = os.path.join(PROJECT_ROOT, "player_data")
     assets_dir = os.path.join(PROJECT_ROOT, "assets")
 
+    # Validate dataset presence
+    from src.data_loader import validate_dataset_presence
+    valid_data, msg = validate_dataset_presence(data_dir)
+    if not valid_data:
+        st.error(f"⚠️ {msg}")
+        st.stop()
+
     # Load high-performance match index
     match_index = get_cached_match_index(data_dir)
 
     # 1. Sidebar Controls
-    # Collect available players for the selected match or globally
-    active_users = []
-    sidebar_params = render_sidebar(match_index=match_index, available_users=active_users)
+    sidebar_params = render_sidebar(match_index=match_index, data_dir=data_dir)
 
     selected_map = sidebar_params["selected_map"]
     selected_date = sidebar_params["selected_date"]

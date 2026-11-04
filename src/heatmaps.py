@@ -86,8 +86,8 @@ def create_density_heatmap(
     if subset.empty:
         return None
 
-    # Enforce minimum points for contouring
-    if len(subset) < 2:
+    # Enforce minimum points and spatial variation for 2D contouring
+    if len(subset) < 3 or subset['pixel_x'].nunique() < 2 or subset['pixel_y'].nunique() < 2:
         return None
 
     eff_opacity = opacity if opacity is not None else preset["default_opacity"]

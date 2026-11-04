@@ -68,20 +68,31 @@ def render_analytics_dashboard(df: pd.DataFrame, match_index_df: pd.DataFrame):
         values = [hb['human_kills'], hb['bot_kills'], int((df['event'] == 'KilledByStorm').sum())]
         colors = ['#00E5FF', '#FF9100', '#D500F9']
 
-        fig_hb = go.Figure(data=[go.Pie(
-            labels=labels,
-            values=values,
-            hole=.45,
-            marker=dict(colors=colors),
-            textinfo='label+percent'
-        )])
-        fig_hb.update_layout(
-            title=dict(text="Lethality Breakdown (Humans vs. Bots vs. Storm)", font=dict(size=13, color="#00E5FF")),
-            height=320,
-            showlegend=False,
-            **CHART_THEME
-        )
-        st.plotly_chart(fig_hb, use_container_width=True)
+        if sum(values) > 0:
+            fig_hb = go.Figure(data=[go.Pie(
+                labels=labels,
+                values=values,
+                hole=.45,
+                marker=dict(colors=colors),
+                textinfo='label+percent'
+            )])
+            fig_hb.update_layout(
+                title=dict(text="Lethality Breakdown (Humans vs. Bots vs. Storm)", font=dict(size=13, color="#00E5FF")),
+                height=320,
+                showlegend=False,
+                **CHART_THEME
+            )
+            st.plotly_chart(fig_hb, use_container_width=True)
+        else:
+            st.markdown(
+                """
+                <div style="background:rgba(14, 18, 27, 0.95); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:30px; text-align:center; height:320px; display:flex; flex-direction:column; justify-content:center;">
+                    <div style="font-size:24px; margin-bottom:8px;">🕊️</div>
+                    <div style="color:#8F9CAE; font-size:13px;">No combat eliminations in this filtered selection.</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
     row2_col1, row2_col2 = st.columns(2)
 

@@ -304,3 +304,32 @@ def load_all_telemetry(
         pass
 
     return full_df
+
+
+def get_match_participants(match_id: str, data_dir: str) -> List[str]:
+    """Retrieve all unique player/bot user_ids in a match from file paths in <1ms."""
+    if not match_id:
+        return []
+    clean_match = match_id.replace('.nakama-0', '')
+    pattern = os.path.join(data_dir, "*", f"*_{clean_match}.nakama-0")
+    files = glob.glob(pattern)
+    if not files:
+        pattern2 = os.path.join(data_dir, "*", f"*{clean_match}*")
+        files = glob.glob(pattern2)
+    users = []
+    for f in files:
+        fname = os.path.basename(f)
+        parts = fname.replace(".nakama-0", "").split("_")
+        if len(parts) >= 2:
+            users.append(parts[0])
+    return sorted(list(set(users)))
+
+
+def validate_dataset_presence(data_dir: str) -> Tuple[bool, str]:
+    """Check if player_data directory exists and contains telemetry files."""
+    if not os.path.exists(data_dir):
+        return False, f"Telemetry directory '{data_dir}' not found. Please place 'player_data' in the project directory."
+    found = glob.glob(os.path.join(data_dir, "*", "*.nakama-0"))
+    if not found:
+        return False, f"No '.nakama-0' telemetry files found in '{data_dir}'. Ensure day folders (e.g. February_10) are present."
+    return True, f"Found {len(found)} telemetry files across partitions."

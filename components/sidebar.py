@@ -14,6 +14,7 @@ from src.coordinate_mapper import MAP_CONFIGS
 
 def render_sidebar(
     match_index: pd.DataFrame,
+    data_dir: Optional[str] = None,
     available_users: Optional[List[str]] = None
 ) -> Dict[str, Any]:
     """
@@ -105,8 +106,18 @@ def render_sidebar(
 
         # Individual Player Selector
         selected_players = None
+        if selected_match_id and data_dir and not available_users:
+            from src.data_loader import get_match_participants
+            available_users = get_match_participants(selected_match_id, data_dir)
+
         if available_users and len(available_users) > 0:
-            user_options = ["All Players"] + sorted(available_users)
+            filtered_users = available_users
+            if player_type_filter == "Human Players Only":
+                filtered_users = [u for u in available_users if ('-' in u and len(u) > 20)]
+            elif player_type_filter == "Bots Only":
+                filtered_users = [u for u in available_users if not ('-' in u and len(u) > 20)]
+
+            user_options = ["All Players"] + sorted(filtered_users)
             chosen_user = st.selectbox(
                 "Filter Specific Player",
                 user_options,
