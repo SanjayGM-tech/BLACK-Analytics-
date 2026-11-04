@@ -220,35 +220,59 @@ def main():
     }
     render_kpi_cards(kpi_metrics)
 
-    # 5. Section D: Match Timeline Playback (Active when in Single Match Mode)
-    map_telemetry = filtered_telemetry
-    if match_mode == "Single Match (Timeline & Detail)" and selected_match_id:
-        map_telemetry, curr_time, max_time = render_timeline_controls(filtered_telemetry)
+    # Tabs for Workflow Navigation
+    tab_explorer, tab_insights, tab_architecture = st.tabs([
+        "🗺️ Player Journey Explorer & Timeline",
+        "💡 Level Design Insights (3 Key Findings)",
+        "📐 System Architecture & Calibration"
+    ])
 
-    # 6. Section B & C: Interactive Minimap & Heatmap
-    st.markdown("")
-    map_fig = render_interactive_map(
-        df=map_telemetry,
-        map_id=selected_map,
-        assets_dir=assets_dir,
-        heatmap_mode=heatmap_mode,
-        heatmap_opacity=heatmap_opacity,
-        heatmap_resolution=heatmap_resolution,
-        show_trajectories=show_trajectories,
-        show_markers=show_trajectory_dots,
-        selected_users=selected_players,
-        show_humans=show_humans,
-        show_bots=show_bots,
-        active_events=active_events,
-        line_width=line_width,
-        marker_scale=marker_scale
-    )
-    st.plotly_chart(map_fig, use_container_width=True)
-    render_map_legend()
+    with tab_explorer:
+        # 5. Section D: Match Timeline Playback (Active when in Single Match Mode)
+        map_telemetry = filtered_telemetry
+        if match_mode == "Single Match (Timeline & Detail)" and selected_match_id:
+            map_telemetry, curr_time, max_time = render_timeline_controls(filtered_telemetry)
 
-    # 7. Section E: Analytics Visualizations
-    st.markdown("---")
-    render_analytics_dashboard(filtered_telemetry, match_index)
+        # 6. Section B & C: Interactive Minimap & Heatmap
+        st.markdown("")
+        map_fig = render_interactive_map(
+            df=map_telemetry,
+            map_id=selected_map,
+            assets_dir=assets_dir,
+            heatmap_mode=heatmap_mode,
+            heatmap_opacity=heatmap_opacity,
+            heatmap_resolution=heatmap_resolution,
+            show_trajectories=show_trajectories,
+            show_markers=show_trajectory_dots,
+            selected_users=selected_players,
+            show_humans=show_humans,
+            show_bots=show_bots,
+            active_events=active_events,
+            line_width=line_width,
+            marker_scale=marker_scale
+        )
+        st.plotly_chart(map_fig, use_container_width=True)
+        render_map_legend()
+
+        # 7. Section E: Analytics Visualizations
+        st.markdown("---")
+        render_analytics_dashboard(filtered_telemetry, match_index)
+
+    with tab_insights:
+        insights_file = os.path.join(PROJECT_ROOT, "INSIGHTS.md")
+        if os.path.exists(insights_file):
+            with open(insights_file, "r", encoding="utf-8") as f:
+                st.markdown(f.read())
+        else:
+            st.info("Insights documentation not found.")
+
+    with tab_architecture:
+        arch_file = os.path.join(PROJECT_ROOT, "ARCHITECTURE.md")
+        if os.path.exists(arch_file):
+            with open(arch_file, "r", encoding="utf-8") as f:
+                st.markdown(f.read())
+        else:
+            st.info("Architecture documentation not found.")
 
 
 if __name__ == "__main__":
