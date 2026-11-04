@@ -1,0 +1,28 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# Testing & Linting
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Large Data & Archives (Preserve source production telemetry privately)
+player_data/
+player_data.zip
+temp_*
+*.log
